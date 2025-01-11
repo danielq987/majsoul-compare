@@ -50,7 +50,7 @@ function getOptionLabel(x: PlayerMetadataLite, t: (x: string) => string): string
   }
   return ret;
 }
-export function PlayerSearch() {
+export function PlayerSearch({ onSelect }: { onSelect?: ((player: PlayerMetadataLite) => void) }) {
   const { t } = useTranslation("form");
   const [selectedItem, setSelectedItem] = useState(null as PlayerMetadataLite | null);
   const [version, setVersion] = useState(0);
@@ -81,6 +81,10 @@ export function PlayerSearch() {
     return [filteredPlayers, mayHaveMore];
   }, [searchText, version]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
+    if (selectedItem && onSelect) {
+      onSelect(selectedItem);
+      setSelectedItem(null);
+    }
     if (!searchText.trim()) {
       return;
     }
@@ -114,14 +118,16 @@ export function PlayerSearch() {
         networkError();
       });
     }, 500);
+    console.log(selectedItem);
     return () => {
       cancelled = true;
       if (debounceToken) {
         clearTimeout(debounceToken);
       }
     };
-  }, [searchText, isLoading]);
-  if (selectedItem) {
+  }, [selectedItem, searchText, isLoading]);
+
+  if (selectedItem && !onSelect) {
     const crossSiteConf = getCrossSiteConf(selectedItem);
     if (crossSiteConf) {
       location.href = `https://${crossSiteConf.canonicalDomain}${generatePlayerPathById(selectedItem.id)}`;

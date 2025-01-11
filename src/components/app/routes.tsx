@@ -16,12 +16,19 @@ const RecentHighlight = Loadable({
 const ContestTools = Loadable({
   loader: () => import("../contestTools"),
 });
+const Compare = Loadable({
+  loader: () => import("../compare"),
+});
 export function Routes() {
   return (
     <Switch>
       <Route path="/ranking">
         <PageCategory category="Ranking" />
         <Ranking />
+      </Route>
+      <Route path="/compare">
+        <PageCategory category="Compare" />
+        <Compare />
       </Route>
       <Route path="/statistics">
         <PageCategory category="Statistics" />

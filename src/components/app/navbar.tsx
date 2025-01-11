@@ -32,6 +32,7 @@ import { MenuButton } from "../misc/menuButton";
 import StarredPlayerMenu from "../playerDetails/star/starredPlayerMenu";
 
 const NAV_ITEMS = [
+  ["Compare", "compare"],
   ["最近役满", "highlight"],
   ["排行榜", "ranking"],
   ["大数据", "statistics"],
