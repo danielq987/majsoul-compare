@@ -11,12 +11,17 @@ import { networkError } from "../../utils/notify";
 import Conf, { CONFIGURATIONS } from "../../utils/conf";
 import Loading from "../misc/loading";
 
-const playerSearchCache = new Map<string, PlayerMetadataLite[] | Promise<PlayerMetadataLite[]>>();
+const playerSearchCache = new Map<
+  string,
+  PlayerMetadataLite[] | Promise<PlayerMetadataLite[]>
+>();
 const NUM_FETCH = 20;
 
 const normalizeName = (s: string) => s.toLowerCase().trim();
 
-function findRawResultFromCache(prefix: string): { result: PlayerMetadataLite[]; isExactMatch: boolean } | null {
+function findRawResultFromCache(
+  prefix: string
+): { result: PlayerMetadataLite[]; isExactMatch: boolean } | null {
   const normalizedPrefix = normalizeName(prefix);
   prefix = normalizedPrefix;
   while (prefix) {
@@ -37,12 +42,17 @@ function getCrossSiteConf(x: PlayerMetadataLite) {
   if (Conf.availableModes.length > 1) {
     const level = new Level(x.level.id);
     if (!Conf.availableModes.some((mode) => level.isAllowedMode(mode))) {
-      return level.getNumPlayerId() === 2 ? CONFIGURATIONS.ikeda : CONFIGURATIONS.DEFAULT;
+      return level.getNumPlayerId() === 2
+        ? CONFIGURATIONS.ikeda
+        : CONFIGURATIONS.DEFAULT;
     }
   }
   return null;
 }
-function getOptionLabel(x: PlayerMetadataLite, t: (x: string) => string): string {
+function getOptionLabel(
+  x: PlayerMetadataLite,
+  t: (x: string) => string
+): string {
   let ret = `[${LevelWithDelta.getTag(x.level)}] ${x.nickname}`;
   const conf = getCrossSiteConf(x);
   if (conf) {
@@ -50,9 +60,15 @@ function getOptionLabel(x: PlayerMetadataLite, t: (x: string) => string): string
   }
   return ret;
 }
-export function PlayerSearch({ onSelect }: { onSelect?: ((player: PlayerMetadataLite) => void) }) {
+export function PlayerSearch({
+  onSelect,
+}: {
+  onSelect?: (player: PlayerMetadataLite) => void;
+}) {
   const { t } = useTranslation("form");
-  const [selectedItem, setSelectedItem] = useState(null as PlayerMetadataLite | null);
+  const [selectedItem, setSelectedItem] = useState(
+    null as PlayerMetadataLite | null
+  );
   const [version, setVersion] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [open, setOpen] = React.useState(false);
@@ -96,28 +112,33 @@ export function PlayerSearch({ onSelect }: { onSelect?: ((player: PlayerMetadata
       return;
     }
     let cancelled = false;
-    let debounceToken: ReturnType<typeof setTimeout> | undefined = setTimeout(() => {
-      debounceToken = undefined;
-      if (cancelled) {
-        return;
-      }
-      if (playerSearchCache.has(prefix)) {
-        return;
-      }
-      const promise = searchPlayer(prefix, NUM_FETCH).then(function (players) {
-        playerSearchCache.set(prefix, players);
-        if (!cancelled) {
-          setVersion(new Date().getTime());
+    let debounceToken: ReturnType<typeof setTimeout> | undefined = setTimeout(
+      () => {
+        debounceToken = undefined;
+        if (cancelled) {
+          return;
         }
-        return players;
-      });
-      playerSearchCache.set(prefix, promise);
-      promise.catch((e) => {
-        console.error(e);
-        playerSearchCache.delete(prefix);
-        networkError();
-      });
-    }, 500);
+        if (playerSearchCache.has(prefix)) {
+          return;
+        }
+        const promise = searchPlayer(prefix, NUM_FETCH).then(function (
+          players
+        ) {
+          playerSearchCache.set(prefix, players);
+          if (!cancelled) {
+            setVersion(new Date().getTime());
+          }
+          return players;
+        });
+        playerSearchCache.set(prefix, promise);
+        promise.catch((e) => {
+          console.error(e);
+          playerSearchCache.delete(prefix);
+          networkError();
+        });
+      },
+      500
+    );
     console.log(selectedItem);
     return () => {
       cancelled = true;
@@ -130,7 +151,9 @@ export function PlayerSearch({ onSelect }: { onSelect?: ((player: PlayerMetadata
   if (selectedItem && !onSelect) {
     const crossSiteConf = getCrossSiteConf(selectedItem);
     if (crossSiteConf) {
-      location.href = `https://${crossSiteConf.canonicalDomain}${generatePlayerPathById(selectedItem.id)}`;
+      location.href = `https://${
+        crossSiteConf.canonicalDomain
+      }${generatePlayerPathById(selectedItem.id)}`;
       return <Loading />;
     }
     return <Redirect to={generatePlayerPathById(selectedItem.id)} push />;
@@ -147,13 +170,18 @@ export function PlayerSearch({ onSelect }: { onSelect?: ((player: PlayerMetadata
         setOpen(false);
       }}
       inputValue={searchText}
-      onInputChange={(_, value, reason) => setSearchText(reason === "reset" ? "" : value)}
-      onChange={(_, value, reason) => reason === "selectOption" && setSelectedItem(value)}
+      onInputChange={(_, value, reason) =>
+        setSearchText(reason === "reset" ? "" : value)
+      }
+      onChange={(_, value, reason) =>
+        reason === "selectOption" && setSelectedItem(value)
+      }
       options={players}
       getOptionLabel={(x) => getOptionLabel(x, t)}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       loading={isLoading}
       filterOptions={(x) => x}
+      value={null}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -161,7 +189,11 @@ export function PlayerSearch({ onSelect }: { onSelect?: ((player: PlayerMetadata
           InputProps={{
             ...params.InputProps,
             endAdornment: (
-              <React.Fragment>{isLoading ? <CircularProgress color="inherit" size={20} /> : null}</React.Fragment>
+              <React.Fragment>
+                {isLoading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+              </React.Fragment>
             ),
           }}
         />

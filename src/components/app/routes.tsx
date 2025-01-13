@@ -3,6 +3,8 @@ import Loadable from "../misc/customizedLoadable";
 import GameRecords from "../gameRecords";
 import { PageCategory } from "../misc/tracker";
 import Conf from "../../utils/conf";
+import { DataAdapterProvider } from "../gameRecords/dataAdapterProvider";
+import { ModelProvider } from "../gameRecords/model";
 
 const Ranking = Loadable({
   loader: () => import("../ranking"),
@@ -28,7 +30,11 @@ export function Routes() {
       </Route>
       <Route path="/compare">
         <PageCategory category="Compare" />
-        <Compare />
+        <ModelProvider>
+          <DataAdapterProvider>
+            <Compare />
+          </DataAdapterProvider>
+        </ModelProvider>
       </Route>
       <Route path="/statistics">
         <PageCategory category="Statistics" />

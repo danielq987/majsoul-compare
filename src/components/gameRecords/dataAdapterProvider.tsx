@@ -155,7 +155,7 @@ function getProviderKey(model: Model): string {
   throw new Error("Unknown model type");
 }
 
-function createProvider(model: Model): DataProvider {
+export function createProvider(model: Model): DataProvider {
   if (model.type === undefined) {
     return DataProvider.createListing(model.date || dayjs().startOf("day"), model.selectedMode || null);
   }
