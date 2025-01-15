@@ -139,7 +139,6 @@ export function PlayerSearch({
       },
       500
     );
-    console.log(selectedItem);
     return () => {
       cancelled = true;
       if (debounceToken) {

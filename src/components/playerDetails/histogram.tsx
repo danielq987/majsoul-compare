@@ -6,7 +6,7 @@ import { getGlobalHistogram } from "../../data/source/misc";
 import { GameMode, HistogramData, HistogramGroup, modeLabelNonTranslated, PlayerExtendedStats } from "../../data/types";
 import { formatPercent, sum } from "../../utils";
 import { useAsyncFactory } from "../../utils/async";
-import { useModel } from "../gameRecords/model";
+import { Model, useModel } from "../gameRecords/model";
 
 const VIEWBOX_HEIGHT = 40;
 
@@ -157,12 +157,18 @@ export function useStatHistogram({
   statKey,
   value,
   valueFormatter,
+  inputModel
 }: {
   statKey: keyof PlayerExtendedStats;
   value?: number;
   valueFormatter: (value: number) => string;
+  inputModel?: Model
 }) {
-  const [model] = useModel();
+  let [model] = useModel();
+  if (inputModel) {
+    model = inputModel;
+  }
+
   const globalHistogram = useAsyncFactory(() => getGlobalHistogram().catch(() => null), [], "globalHistogram");
   if (!globalHistogram || model.type !== "player" || model.selectedModes.length !== 1) {
     return null;

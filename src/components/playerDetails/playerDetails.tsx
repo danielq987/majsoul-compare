@@ -31,6 +31,7 @@ import { Box, BoxProps, Grid, Link, Typography } from "@mui/material";
 import { useStatHistogram } from "./histogram";
 import StarButton from "./star/starButton";
 import { networkError } from "../../utils/notify";
+import { GenericStat } from "./genericStat";
 
 const RankRateChart = Loadable({
   loader: () => import("./charts/rankRate"),
@@ -41,50 +42,6 @@ const RecentRankChart = Loadable({
 const WinLoseDistribution = Loadable({
   loader: () => import("./charts/winLoseDistribution"),
 });
-
-function GenericStat({
-  stats,
-  statKey,
-  description,
-  formatter,
-  formatterHistogram,
-  label,
-  disableHistogram,
-  defaultValue = 0,
-  hideValue = false,
-}: {
-  stats: PlayerExtendedStats;
-  statKey: keyof PlayerExtendedStats;
-  description?: ReactNode;
-  formatter: (value: number) => string;
-  formatterHistogram?: (value: number) => string;
-  label?: string;
-  disableHistogram?: boolean;
-  defaultValue?: number | string;
-  hideValue?: boolean;
-}) {
-  const value = stats[statKey] ?? defaultValue;
-  if (typeof value !== "number" && value !== defaultValue) {
-    throw new Error(`${statKey} is not a number`);
-  }
-  const extraTip = useCallback(() => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const ret = useStatHistogram({
-      statKey,
-      valueFormatter: formatterHistogram || formatter,
-      value: typeof value === "number" ? value : undefined,
-    });
-    if (disableHistogram) {
-      return null;
-    }
-    return stats.count > 100 ? ret : null;
-  }, [statKey, formatterHistogram, formatter, value, disableHistogram, stats.count]);
-  return (
-    <StatItem description={description} label={label || statKey} extraTip={extraTip}>
-      {hideValue ? "" : typeof value === "string" ? value : formatter(value)}
-    </StatItem>
-  );
-}
 
 function ExtendedStatsViewAsync({
   metadata,

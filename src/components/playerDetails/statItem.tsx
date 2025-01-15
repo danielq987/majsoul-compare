@@ -15,17 +15,24 @@ import { useTranslation } from "react-i18next";
 export const StatTooltip = styled(({ className, ...props }: TooltipProps) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
-  return <Tooltip placement={matches ? "bottom" : "bottom-end"} {...props} classes={{ popper: className }} />;
+  return (
+    <Tooltip
+      placement={matches ? "bottom" : "bottom-end"}
+      {...props}
+      classes={{ popper: className }}
+    />
+  );
 })(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}.${tooltipClasses.tooltip}.${tooltipClasses.tooltip}.${tooltipClasses.tooltip}`]: {
-    textAlign: "center",
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+  [`& .${tooltipClasses.tooltip}.${tooltipClasses.tooltip}.${tooltipClasses.tooltip}.${tooltipClasses.tooltip}`]:
+    {
+      textAlign: "center",
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
 
-    "&, & *": {
-      userSelect: "none",
+      "&, & *": {
+        userSelect: "none",
+      },
     },
-  },
 }));
 
 export const StatList = styled(Box)(({ theme }) => ({
@@ -86,7 +93,7 @@ const StatItem = React.memo(function ({
   valueProps = {},
   extraTip,
 }: {
-  label: string;
+  label?: string;
   description?: ReactNode;
   i18nNamespace?: string[];
   children: React.ReactChild;
@@ -98,12 +105,24 @@ const StatItem = React.memo(function ({
     extraTip = extraTip();
   }
   const translatedTip =
-    (description ? (typeof description === "string" ? t(description).toString() : description) : "") || "";
+    (description
+      ? typeof description === "string"
+        ? t(description).toString()
+        : description
+      : "") || "";
   return (
     <Box display="flex" justifyContent="space-between">
-      <Typography variant="subtitle2" lineHeight="1.25" mr={[1, 2]} noWrap textOverflow="initial">
-        {t(label)}
-      </Typography>
+      {label && (
+        <Typography
+          variant="subtitle2"
+          lineHeight="1.25"
+          mr={[1, 2]}
+          noWrap
+          textOverflow="initial"
+        >
+          {t(label)}
+        </Typography>
+      )}
       <StatTooltip
         title={
           !translatedTip && !extraTip ? (
@@ -121,7 +140,13 @@ const StatItem = React.memo(function ({
         }
         arrow
       >
-        <Typography variant="body2" lineHeight="1.25" noWrap textAlign="right" {...valueProps}>
+        <Typography
+          variant="body2"
+          lineHeight="1.25"
+          noWrap
+          textAlign="right"
+          {...valueProps}
+        >
           {children}
         </Typography>
       </StatTooltip>
